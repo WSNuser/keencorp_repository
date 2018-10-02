@@ -35,23 +35,44 @@ class KeenCorpReporter:
         start_date = datetime.datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S")
         to_date = datetime.datetime.strptime(to_date, "%Y-%m-%dT%H:%M:%S")
 
-        if report_config == None and supergroups == None:
-            supergroups = self.api.request_super_groups()
-            clusters = {}
+        supergroups = self.api.request_super_groups()
+
+        clusters = {}
+
+        for sg in supergroups["supergroups"].keys():
+            if not sg.split(":")[0] in clusters:
+                clusters[sg.split(":")[0]] = []
+            clusters[sg.split(":")[0]].append(sg)
+
+        if report_config == None:
             report_config = []
-            for sg in supergroups["supergroups"].keys():
-                if not sg.split(":")[0] in clusters:
-                    clusters[sg.split(":")[0]] = []
-                clusters[sg.split(":")[0]].append(sg)
             for i in sorted(clusters.keys()):
                 report_config.append(sorted(clusters[i]))
+        else:
+            request_supergroups = {"supergroups": {}}
+            for line in report_config:
+                for item in line:
+                    request_supergroups["supergroups"][item] = supergroups["supergroups"][item]
+            supergroups = request_supergroups
 
-            if self.external_smoothing:
-                results = self.api.request_smoothed_scores(supergroups["supergroups"], core.keencorp_func.timeToEpoch(start_date), core.keencorp_func.timeToEpoch(to_date))
-            else:
-                results = self.api.request_scores(supergroups["supergroups"],
-                                                  core.keencorp_func.timeToEpoch(start_date),
-                                                  core.keencorp_func.timeToEpoch(to_date), no_smoothing=self.no_smoothing)
+        if self.external_smoothing:
+            results = {"scores": {}}
+
+            for x in supergroups["supergroups"].keys():
+                my_res = self.api.request_smoothed_scores({x: supergroups["supergroups"][x]},
+                                                 core.keencorp_func.timeToEpoch(start_date),
+                                                 core.keencorp_func.timeToEpoch(to_date))
+                results["scores"][x] = my_res["scores"][x]
+
+        else:
+            results = {"scores": {}}
+
+            for x in supergroups["supergroups"].keys():
+                my_res = self.api.request_scores({x: supergroups["supergroups"][x]},
+                                                 core.keencorp_func.timeToEpoch(start_date),
+                                                 core.keencorp_func.timeToEpoch(to_date), no_smoothing=self.no_smoothing)
+                results["scores"][x] = my_res["scores"][x]
+
         stats = {
             "overall_messages_processed": 0,
             "clusters": {}

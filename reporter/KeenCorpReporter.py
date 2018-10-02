@@ -49,7 +49,7 @@ class KeenCorpReporter:
             self.external_smoothing = False
 
     def generate(self, start_date="2018-01-01T00:00:00", to_date=datetime.datetime.now().isoformat().split(".")[0], supergroups=None, report_config=None):
-        """Generate the report files.
+        """Generate the report files .
 
         Args:
             start_date Optional([str]): A starting date as a string in the format YYYY-MM-DDTHH:MM:SS

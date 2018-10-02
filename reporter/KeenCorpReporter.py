@@ -1,57 +1,102 @@
 # -*- coding: utf-8 -*-
 from __future__ import division
-import os
-import sys
+
 import datetime
 import json
+import os
+import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 import core.keencorp_func
 import core.keencorp_api
 
-"""The procedure starts the steps necessary to 
+
+"""KeenCorpReport class for making requests to the KeenCorp API and write a number of JSON files for further inspection.
+ 
+Example:
+kcr = KeenCorpReporter.KeenCorpReporter(credentials)
+kcr.generate()
 
 """
 
 class KeenCorpReporter:
+    """The KeenCorpReporter class generates files based on passed parameters.
+
+    """
 
     def __init__(self, credentials):
+        """Initialization of the class with passed credentials.
 
-        # Global variables
+        Args:
+            credentials (dict): a dictionary holding "api_access" with a username and password and additional optional
+             parameters.
+        """
+
         self.credentials = credentials
         self.identity = self.credentials["api_access"]["username"].split("@")[1]
-        self.api = core.keencorp_api.keencorp_api(self.credentials["api_access"]["username"], self.credentials["api_access"]["password"], "https://api.keencorp.com")
+        self.api = core.keencorp_api.keencorp_api(
+            self.credentials["api_access"]["username"],
+            self.credentials["api_access"]["password"], "https://api.keencorp.com")
+
         if "no_smoothing" in self.credentials:
             self.no_smoothing = self.credentials["no_smoothing"]
         else:
             self.no_smoothing = False
+
         if "external_smoothing" in self.credentials:
             self.external_smoothing = self.credentials["external_smoothing"]
         else:
             self.external_smoothing = False
 
     def generate(self, start_date="2018-01-01T00:00:00", to_date=datetime.datetime.now().isoformat().split(".")[0], supergroups=None, report_config=None):
+        """Generate the report files.
+
+        Args:
+            start_date Optional([str]): A starting date as a string in the format YYYY-MM-DDTHH:MM:SS
+            to_date Optional([str]): A end date as a string in the format YYYY-MM-DDTHH:MM:SS
+            supergroups (Optional([dict]): A dictionary with supergroups (not yet implemented).
+            report_config Optional([list]): A list of list with supergroups which should be in a report together.
+        """
 
         start_date = datetime.datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S")
         to_date = datetime.datetime.strptime(to_date, "%Y-%m-%dT%H:%M:%S")
 
-        if report_config == None and supergroups == None:
-            supergroups = self.api.request_super_groups()
-            clusters = {}
+        supergroups = self.api.request_super_groups()
+
+        clusters = {}
+        for sg in supergroups["supergroups"].keys():
+            if not sg.split(":")[0] in clusters:
+                clusters[sg.split(":")[0]] = []
+            clusters[sg.split(":")[0]].append(sg)
+
+        if report_config == None:
             report_config = []
-            for sg in supergroups["supergroups"].keys():
-                if not sg.split(":")[0] in clusters:
-                    clusters[sg.split(":")[0]] = []
-                clusters[sg.split(":")[0]].append(sg)
             for i in sorted(clusters.keys()):
                 report_config.append(sorted(clusters[i]))
+        else:
+            request_supergroups = {"supergroups": {}}
+            for line in report_config:
+                for item in line:
+                    request_supergroups["supergroups"][item] = supergroups["supergroups"][item]
+            supergroups = request_supergroups
 
-            if self.external_smoothing:
-                results = self.api.request_smoothed_scores(supergroups["supergroups"], core.keencorp_func.timeToEpoch(start_date), core.keencorp_func.timeToEpoch(to_date))
-            else:
-                results = self.api.request_scores(supergroups["supergroups"],
-                                                  core.keencorp_func.timeToEpoch(start_date),
-                                                  core.keencorp_func.timeToEpoch(to_date), no_smoothing=self.no_smoothing)
+        if self.external_smoothing:
+            results = {"scores": {}}
+            for x in supergroups["supergroups"].keys():
+                my_res = self.api.request_smoothed_scores({x: supergroups["supergroups"][x]},
+                                                 core.keencorp_func.timeToEpoch(start_date),
+                                                 core.keencorp_func.timeToEpoch(to_date))
+                results["scores"][x] = my_res["scores"][x]
+
+        else:
+            results = {"scores": {}}
+            for x in supergroups["supergroups"].keys():
+                my_res = self.api.request_scores({x: supergroups["supergroups"][x]},
+                                                 core.keencorp_func.timeToEpoch(start_date),
+                                                 core.keencorp_func.timeToEpoch(to_date),
+                                                 no_smoothing=self.no_smoothing)
+                results["scores"][x] = my_res["scores"][x]
+
         stats = {
             "overall_messages_processed": 0,
             "clusters": {}
@@ -62,7 +107,6 @@ class KeenCorpReporter:
                 stats["clusters"][group] = {"total_messages": 0,
                                                  "details": {"total_counted": 0}}
 
-        # Create Standard
         result = {
             "account_name": self.identity,
             "description": "Automatically generated report for: " + str(self.identity) + " from: " +

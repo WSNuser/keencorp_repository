@@ -1,0 +1,20 @@
+2018-09-17 23:04:42,394 Starting new cycle for identity: keencorp
+2018-09-17 23:04:42,394 Attempting to process: 12 mailboxes
+2018-09-17 23:04:42,394 Using connector type: Office365API
+2018-09-17 23:04:46,427 Collecting done, found: 33 messages for mailbox: info@keencorp.com
+2018-09-17 23:05:27,786 Collecting done, found: 326 messages for mailbox: fmarsman@keencorp.com
+2018-09-17 23:07:12,016 Collecting done, found: 762 messages for mailbox: hhemels@keencorp.com
+2018-09-17 23:09:31,332 Collecting done, found: 820 messages for mailbox: pvisscher@keencorp.com
+2018-09-17 23:10:53,910 Collecting done, found: 21 messages for mailbox: afastow@keencorp.com
+2018-09-17 23:10:59,926 Collecting done, found: 38 messages for mailbox: hmannak@keencorp.com
+2018-09-17 23:12:31,223 Collecting done, found: 794 messages for mailbox: mmooij@keencorp.com
+2018-09-17 23:14:00,319 Collecting done, found: 127 messages for mailbox: jsteeman@keencorp.com
+2018-09-17 23:14:46,710 Collecting done, found: 67 messages for mailbox: vmirovic@keencorp.com
+2018-09-17 23:15:09,461 Collecting done, found: 56 messages for mailbox: bjakic@keencorp.com
+2018-09-17 23:15:43,226 Collecting done, found: 97 messages for mailbox: edeboer@keencorp.com
+2018-09-17 23:16:50,601 Collecting done, found: 795 messages for mailbox: jpvanlin@keencorp.com
+2018-09-17 23:18:18,928 Collecting email done, found: 3639 new messages, processed 12 mailboxes, found: 0 errors.
+2018-09-27 16:47:52,375 Starting new cycle for identity: keencorp
+2018-09-27 16:47:52,375 Attempting to process: 12 mailboxes
+2018-09-27 16:47:52,375 Using connector type: Office365API
+2018-09-27 16:47:56,711 Collecting done, found: 2 messages for mailbox: info@keencorp.com

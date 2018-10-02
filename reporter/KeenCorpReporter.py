@@ -25,6 +25,10 @@ class KeenCorpReporter:
             self.no_smoothing = self.credentials["no_smoothing"]
         else:
             self.no_smoothing = False
+        if "external_smoothing" in self.credentials:
+            self.external_smoothing = self.credentials["external_smoothing"]
+        else:
+            self.external_smoothing = False
 
     def generate(self, start_date="2018-01-01T00:00:00", to_date=datetime.datetime.now().isoformat().split(".")[0], supergroups=None, report_config=None):
 
@@ -42,8 +46,12 @@ class KeenCorpReporter:
             for i in sorted(clusters.keys()):
                 report_config.append(sorted(clusters[i]))
 
-            results = self.api.request_scores(supergroups["supergroups"], core.keencorp_func.timeToEpoch(start_date), core.keencorp_func.timeToEpoch(to_date), no_smoothing=self.no_smoothing)
-
+            if self.external_smoothing:
+                results = self.api.request_smoothed_scores(supergroups["supergroups"], core.keencorp_func.timeToEpoch(start_date), core.keencorp_func.timeToEpoch(to_date))
+            else:
+                results = self.api.request_scores(supergroups["supergroups"],
+                                                  core.keencorp_func.timeToEpoch(start_date),
+                                                  core.keencorp_func.timeToEpoch(to_date), no_smoothing=self.no_smoothing)
         stats = {
             "overall_messages_processed": 0,
             "clusters": {}

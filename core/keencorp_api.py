@@ -83,6 +83,12 @@ class keencorp_api:
         else:
             return self.__callAPI("request_scores", {"groups": groups, "from": from_epoch, "to": to_epoch, "supergroups": supergroups, "no_smoothing": no_smoothing})
 
+    def request_smoothed_scores(self, groups, from_epoch, to_epoch, supergroups=None):
+        if supergroups==None:
+            return self.__callAPI("request_scores", {"groups": groups, "from": from_epoch, "to": to_epoch})
+        else:
+            return self.__callAPI("request_scores", {"groups": groups, "from": from_epoch, "to": to_epoch, "supergroups": supergroups})
+
     def request_scored_groups(self):
         return self.__callAPI("request_scored_groups", {})
 

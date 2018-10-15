@@ -5,12 +5,12 @@ write a number of JSON files for further inspection, the module is initialized w
 an example. 
 """
 
-# credentials = {
-#    "api_access": {"username": "keencorp@keencorp", "password": "k33nc0rp"},
-#    "advanced_stats": True,
-#  }
-#
-# # Example call to run with standard parameters
+credentials = {
+   "api_access": {"username": "enron@enron_alt", "password": "k33nc0rp"},
+   "advanced_stats": True,
+ }
+
+# Example call to run with standard parameters
 # kcr = KeenCorpReporter.KeenCorpReporter(credentials)
 # kcr.generate()
 
@@ -22,19 +22,19 @@ an example.
 # }
 # #
 # # Example call to run with external smoothing and a defined from and to date
-# kcr = KeenCorpReporter.KeenCorpReporter(credentials)
-# kcr.generate(start_date="2018-04-01T00:00:00", to_date="2018-06-01T00:00:00")
+kcr = KeenCorpReporter.KeenCorpReporter(credentials)
+kcr.generate(start_date="1990-01-01T00:00:00", to_date="2018-06-01T00:00:00")
 
-credentials = {
-   "api_access": {"username": "keencorp@keencorp", "password": "k33nc0rp"},
-   "advanced_stats": False,
-   }
+# credentials = {
+#    "api_access": {"username": "keencorp@keencorp", "password": "k33nc0rp"},
+#    "advanced_stats": False,
+#    }
 #
 # Example call to run with a pre-defined report-config, please make sure the first item of the list is unique (it's used
 # for naming)
-kcr = KeenCorpReporter.KeenCorpReporter(credentials)
-report_config = [
-    ['Gender:F','Gender:M','All'],
-    ['Age:<40', 'Age:>40', 'All']
-]
-kcr.generate(report_config=report_config)
+# kcr = KeenCorpReporter.KeenCorpReporter(credentials)
+# report_config = [
+#     ['Gender:F','Gender:M','All'],
+#     ['Age:<40', 'Age:>40', 'All']
+# ]
+# kcr.generate(report_config=report_config)

@@ -91,11 +91,14 @@ class KeenCorpReporter:
         else:
             results = {"scores": {}}
             for x in supergroups["supergroups"].keys():
-                my_res = self.api.request_scores({x: supergroups["supergroups"][x]},
+                print {x: supergroups["supergroups"][x]}
+                my_res = self.api.request_scores({'all':['all']},
                                                  core.keencorp_func.timeToEpoch(start_date),
                                                  core.keencorp_func.timeToEpoch(to_date),
                                                  no_smoothing=self.no_smoothing)
+
                 results["scores"][x] = my_res["scores"][x]
+                print my_res
 
         stats = {
             "overall_messages_processed": 0,
